@@ -1,0 +1,28 @@
+slug: linux-ssh-brute-force-investigation
+title: Linux SSH Brute Force Investigation
+difficulty: easy
+estimated_minutes: 25
+challenge_version: "1.0.0"
+dataset_version: "1.0.0"
+max_score: 30
+session_ttl_minutes: 45
+published: true
+
+narrative: >
+  Anda bertugas sebagai SOC Analyst L1. Tim monitoring menerima indikasi
+  peningkatan kegagalan autentikasi SSH pada host Linux `linux-auth-01`.
+  Analisis dataset log autentikasi sshd yang tersedia,
+  kenali pola failed login, identifikasi akun dan source IP yang menjadi
+  target, susun timeline, dan tentukan tindakan triage berdasarkan bukti.
+  Dataset ini merupakan simulasi offline untuk latihan — tidak ada SSH server
+  aktif maupun brute force sungguhan.
+
+sections:
+  - id: section-1
+    title: SSH Authentication Log Fundamentals
+    sort_order: 1
+    tasks: [S1-T1, S1-T2, S1-T3, S1-T4, S1-T5, S1-T6, S1-T7, S1-T8]
+  - id: section-2
+    title: SSH Brute Force Investigation and Triage
+    sort_order: 2
+    tasks: [S2-T1, S2-T2, S2-T3, S2-T4, S2-T5, S2-T6, S2-T7]

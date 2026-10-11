@@ -1,0 +1,20 @@
+# Local-only override. Publishes the port on loopback so a developer can open
+# the UI in a browser. This file is for local testing and must NOT be used in
+# production (production access goes through the platform gateway).
+#
+# The base network is `internal: true`, which has no host route, so a published
+# port cannot be reached through it. For local access we attach the service to
+# an additional non-internal bridge network. Do not add this bridge in
+# production.
+
+services:
+  challenge-ui:
+    networks:
+      - challenge-internal
+      - dev-access
+    ports:
+      - "127.0.0.1:8080:8080"
+
+networks:
+  dev-access:
+    driver: bridge

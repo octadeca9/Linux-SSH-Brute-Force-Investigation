@@ -1,0 +1,198 @@
+# Public task definitions. NO answer keys here — ground truth lives in
+# config/ground_truth.yaml (server-side) and is never returned to the browser.
+
+tasks:
+  # --- Section 1 — SSH Authentication Log Fundamentals ----------------------
+  - id: S1-T1
+    section_id: section-1
+    title: Identify the Log Source
+    points: 2
+    validator_type: exact_match
+    sort_order: 1
+    instructions: >
+      Which Linux log file records sshd authentication events on a
+      Debian/Ubuntu host? Enter the full absolute path.
+    answer_hint: "e.g. /var/log/<file>"
+    input: text
+
+  - id: S1-T2
+    section_id: section-1
+    title: Find Failed Login Events
+    points: 2
+    validator_type: structured_choice
+    sort_order: 2
+    instructions: >
+      Which log message phrase indicates a failed SSH password authentication
+      attempt? Choose the correct option.
+    choices: ["Failed password", "Accepted password", "session opened", "Connection closed"]
+    input: choice
+
+  - id: S1-T3
+    section_id: section-1
+    title: Identify the Source IP
+    points: 2
+    validator_type: ip_match
+    sort_order: 3
+    instructions: >
+      Open event EVT-0009 in the log viewer. What is the source IP address
+      recorded for that failed password event? Enter the IPv4 address.
+    answer_hint: "e.g. 203.0.113.x"
+    input: text
+
+  - id: S1-T4
+    section_id: section-1
+    title: Find the Target Username
+    points: 2
+    validator_type: normalized_string
+    sort_order: 4
+    instructions: >
+      Which username received the highest number of failed_password attempts
+      in the dataset? Enter the account name exactly as it appears in the
+      username field.
+    answer_hint: "account name"
+    input: text
+
+  - id: S1-T5
+    section_id: section-1
+    title: Detect Invalid User Attempts
+    points: 2
+    validator_type: integer_match
+    sort_order: 5
+    instructions: >
+      How many `invalid_user` events (login attempts for accounts that do not
+      exist) are present in the dataset? Enter an integer.
+    answer_hint: "whole number"
+    input: text
+
+  - id: S1-T6
+    section_id: section-1
+    title: Count Failed Password Attempts
+    points: 2
+    validator_type: integer_match
+    sort_order: 6
+    instructions: >
+      How many `failed_password` events targeted the account "admin" from the
+      source IP 203.0.113.77 between 2026-10-11T02:10:00Z and
+      2026-10-11T02:20:00Z (inclusive)? Enter an integer.
+    answer_hint: "whole number"
+    input: text
+
+  - id: S1-T7
+    section_id: section-1
+    title: Identify the First Attempt
+    points: 2
+    validator_type: timestamp_match
+    sort_order: 7
+    instructions: >
+      What is the timestamp of the FIRST failed_password attempt in the
+      suspicious burst against "admin" from 203.0.113.77? Use ISO 8601 UTC,
+      e.g. 2026-10-11T02:10:05Z.
+    answer_hint: "ISO 8601 UTC timestamp"
+    input: text
+
+  - id: S1-T8
+    section_id: section-1
+    title: Identify the Last Attempt
+    points: 2
+    validator_type: timestamp_match
+    sort_order: 8
+    instructions: >
+      What is the timestamp of the LAST failed_password attempt in that same
+      burst against "admin" from 203.0.113.77? Use ISO 8601 UTC.
+    answer_hint: "ISO 8601 UTC timestamp"
+    input: text
+
+  # --- Section 2 — SSH Brute Force Investigation and Triage -----------------
+  - id: S2-T1
+    section_id: section-2
+    title: Identify the Top Attacking IP
+    points: 2
+    validator_type: ip_match
+    sort_order: 9
+    instructions: >
+      Which source IP generated the highest number of failed authentication
+      events (failed_password + invalid_user combined)? Enter the IPv4 address.
+    answer_hint: "e.g. 203.0.113.x"
+    input: text
+
+  - id: S2-T2
+    section_id: section-2
+    title: Determine the Attack Pattern
+    points: 2
+    validator_type: structured_choice
+    sort_order: 10
+    instructions: >
+      How would you classify the activity from the top attacking IP? Choose one.
+      single_account_guessing = repeated attempts against one account;
+      multi_account_probing = spread across many accounts;
+      insufficient_evidence = not enough data to decide.
+    choices: ["single_account_guessing", "multi_account_probing", "insufficient_evidence"]
+    input: choice
+
+  - id: S2-T3
+    section_id: section-2
+    title: Check for Successful Authentication
+    points: 2
+    validator_type: structured_choice
+    sort_order: 11
+    instructions: >
+      After the burst of failures, is there a related SUCCESSFUL SSH login
+      (accepted_password / accepted_publickey) for the same account from the
+      same source IP? Choose yes / no / insufficient_evidence and provide the
+      event_ref as evidence.
+    choices: ["yes", "no", "insufficient_evidence"]
+    require_evidence: true
+    evidence_hint: "event_ref of the successful login (e.g. EVT-00xx)"
+    input: choice_with_evidence
+
+  - id: S2-T4
+    section_id: section-2
+    title: Identify the Successful Login Account
+    points: 2
+    validator_type: normalized_string
+    sort_order: 12
+    instructions: >
+      Which account is referenced in the related successful login event? Enter
+      the account name, or `none` if there was no related successful login.
+    answer_hint: "account name or 'none'"
+    input: text
+
+  - id: S2-T5
+    section_id: section-2
+    title: Build the Incident Timeline
+    points: 2
+    validator_type: ordered_events
+    sort_order: 13
+    instructions: >
+      Order these three key events from earliest to latest by their event_ref:
+      the first failed attempt, the last failed attempt, and the successful
+      login. Submit the three event_ref values in chronological order.
+    answer_hint: "three event_ref values, earliest first"
+    input: ordered_events
+    event_choices: ["EVT-0009", "EVT-0018", "EVT-0019"]
+
+  - id: S2-T6
+    section_id: section-2
+    title: Assign Triage Priority
+    points: 2
+    validator_type: structured_choice
+    sort_order: 14
+    instructions: >
+      Given repeated failed logins followed by a successful login from the same
+      attacking IP, what triage priority is appropriate? Choose low / medium /
+      high.
+    choices: ["low", "medium", "high"]
+    input: choice
+
+  - id: S2-T7
+    section_id: section-2
+    title: Submit the SOC Analyst Verdict
+    points: 2
+    validator_type: structured_choice
+    sort_order: 15
+    instructions: >
+      Based on all the evidence, what is your SOC analyst verdict and initial
+      action? monitor = benign/low concern; investigate = suspicious, needs
+      review; escalate = likely compromise, raise to incident response.
+    choices: ["monitor", "investigate", "escalate"]
+    input: choice

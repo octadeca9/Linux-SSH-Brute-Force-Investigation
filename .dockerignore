@@ -1,0 +1,18 @@
+# Keep the answer key OUT of the participant image. The validator receives
+# ground truth at runtime via a read-only mount (dev) or env var (prod).
+config/ground_truth.yaml
+
+# Dev / test / docs — not needed in the runtime image.
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+tests/
+scripts/
+docs/
+.git/
+.gitignore
+.env
+.env.*
+docker-compose*.yml
+*.md

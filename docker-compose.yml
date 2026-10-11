@@ -1,0 +1,54 @@
+name: redlimit-linux-ssh-bruteforce
+
+# Development baseline only. This runs ONE challenge UI for local development and
+# integration testing. It is NOT a multi-participant spawner and NOT a production
+# configuration. For runtime, the spawner creates one isolated container per
+# session from the published immutable image.
+
+services:
+  challenge-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      CHALLENGE_SLUG: linux-ssh-brute-force-investigation
+      DATASET_PATH: /app/dataset/auth_events.jsonl
+      TASKS_ENABLED: ${TASKS_ENABLED:-true}
+      # Ground truth is read from a read-only mount in development, NOT baked
+      # into the image. In production this lives in the trusted validator.
+      GROUND_TRUTH_PATH: /run/secrets/ground_truth.yaml
+      SESSION_ID: ${SESSION_ID:-local-dev-session}
+      PORT: "8080"
+    expose:
+      - "8080"
+    volumes:
+      # Read-only, out-of-image. Simulates the trusted-store separation.
+      - ./config/ground_truth.yaml:/run/secrets/ground_truth.yaml:ro
+    networks:
+      - challenge-internal
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 100
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=2)"
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  challenge-internal:
+    internal: true

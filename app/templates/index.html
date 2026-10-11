@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ challenge.title }}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body data-tasks-enabled="{{ 'true' if tasks_enabled else 'false' }}">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>{{ challenge.title }}</h1>
+      <span class="badge">{{ challenge.difficulty | upper }}</span>
+      <span class="meta-inline">~{{ challenge.estimated_minutes }} min · 2 sections · 15 tasks</span>
+    </div>
+    {% if tasks_enabled %}
+    <div class="topbar-right">
+      <div class="score" id="scorebox">
+        <span id="progress">0/15</span> tasks ·
+        <span id="score">0</span>/<span id="maxscore">30</span> pts
+      </div>
+      <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
+    </div>
+    {% endif %}
+  </header>
+
+  <p class="narrative">{{ narrative }}</p>
+
+  <main class="layout {{ 'with-tasks' if tasks_enabled else 'viewer-only' }}">
+    <section class="viewer" aria-label="SSH authentication log viewer">
+      <div class="filters">
+        <input type="search" id="q" placeholder="Search message / username / IP…" aria-label="Search" />
+        <input type="text" id="f-username" placeholder="username" aria-label="Filter username" />
+        <input type="text" id="f-ip" placeholder="source IP" aria-label="Filter source IP" />
+        <select id="f-type" aria-label="Filter event type">
+          <option value="">all event types</option>
+        </select>
+        <input type="text" id="f-from" placeholder="from (ISO UTC)" aria-label="From timestamp" />
+        <input type="text" id="f-to" placeholder="to (ISO UTC)" aria-label="To timestamp" />
+        <button id="clearBtn" class="btn btn-ghost" type="button">Clear</button>
+      </div>
+      <div class="viewer-meta">
+        <span id="dsmeta"></span>
+        <span id="count"></span>
+      </div>
+      <div class="table-scroll">
+        <table id="events">
+          <thead>
+            <tr>
+              <th data-sort="timestamp" class="sortable">Timestamp (UTC) ▲</th>
+              <th data-sort="event_type" class="sortable">Event</th>
+              <th data-sort="username" class="sortable">User</th>
+              <th data-sort="source_ip" class="sortable">Source IP</th>
+              <th>Ref</th>
+              <th class="msg-col">Message</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    {% if tasks_enabled %}
+    <aside class="tasks" aria-label="Investigation tasks">
+      <h2>Tasks</h2>
+      <div id="sections"></div>
+    </aside>
+    {% endif %}
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
