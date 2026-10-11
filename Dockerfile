@@ -27,7 +27,8 @@ USER appuser
 
 EXPOSE 8080
 
+# Honor a platform-injected $PORT (e.g. ngelinx) and default to 8080 otherwise.
 HEALTHCHECK --interval=20s --timeout=5s --retries=3 --start-period=10s \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=2)" || exit 1
+  CMD python -c "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/health' % os.getenv('PORT','8080'), timeout=2)" || exit 1
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
