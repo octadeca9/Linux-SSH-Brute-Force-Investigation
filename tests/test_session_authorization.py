@@ -24,6 +24,7 @@ def _submit(client, task_id, answer, sid):
     )
 
 
+@pytest.mark.requires_ground_truth
 def test_sessions_do_not_share_score(client):
     _submit(client, "S1-T1", "/var/log/auth.log", sid="user-a")
     a = client.get("/api/session", headers={"X-Session-Id": "user-a"}).json()
@@ -32,6 +33,7 @@ def test_sessions_do_not_share_score(client):
     assert b["score"] == 0  # user-b sees none of user-a's progress
 
 
+@pytest.mark.requires_ground_truth
 def test_reset_only_affects_own_session(client):
     _submit(client, "S1-T1", "/var/log/auth.log", sid="owner-x")
     _submit(client, "S1-T1", "/var/log/auth.log", sid="owner-y")

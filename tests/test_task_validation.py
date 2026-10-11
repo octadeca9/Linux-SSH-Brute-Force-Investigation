@@ -5,6 +5,9 @@ import pytest
 from app.services import validator
 from app.services.loaders import load_ground_truth, load_tasks
 
+# Every test here calls validator.validate(), which loads the answer key.
+pytestmark = pytest.mark.requires_ground_truth
+
 
 def test_all_public_tasks_have_ground_truth():
     gt = load_ground_truth()["tasks"]

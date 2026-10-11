@@ -59,18 +59,21 @@ def test_source_ips_are_documentation_range(events):
 
 # --- ground truth must match what the dataset actually contains --------------
 
+@pytest.mark.requires_ground_truth
 def test_gt_invalid_user_count(events):
     gt = load_ground_truth()["tasks"]["S1-T5"]["expected"]
     actual = sum(1 for e in events if e["event_type"] == "invalid_user")
     assert actual == gt
 
 
+@pytest.mark.requires_ground_truth
 def test_gt_target_username_is_most_failed(events):
     counts = Counter(e["username"] for e in events if e["event_type"] == "failed_password")
     top_user = counts.most_common(1)[0][0]
     assert top_user == load_ground_truth()["tasks"]["S1-T4"]["expected"]
 
 
+@pytest.mark.requires_ground_truth
 def test_gt_failed_count_in_window(events):
     gt = load_ground_truth()["tasks"]["S1-T6"]["expected"]
     lo, hi = _parse("2026-10-11T02:10:00Z"), _parse("2026-10-11T02:20:00Z")
@@ -84,6 +87,7 @@ def test_gt_failed_count_in_window(events):
     assert actual == gt
 
 
+@pytest.mark.requires_ground_truth
 def test_gt_first_last_timestamps(events):
     burst = sorted(
         (e for e in events
@@ -97,6 +101,7 @@ def test_gt_first_last_timestamps(events):
     assert _parse(burst[-1]["timestamp"]) == _parse(tasks["S1-T8"]["expected"])
 
 
+@pytest.mark.requires_ground_truth
 def test_gt_top_attacking_ip(events):
     counts = Counter(
         e["source_ip"] for e in events
@@ -105,6 +110,7 @@ def test_gt_top_attacking_ip(events):
     assert counts.most_common(1)[0][0] == load_ground_truth()["tasks"]["S2-T1"]["expected"]
 
 
+@pytest.mark.requires_ground_truth
 def test_gt_successful_login_evidence_and_account(events):
     gt = load_ground_truth()["tasks"]
     ref = gt["S2-T3"]["evidence_accepted"][0]
@@ -114,6 +120,7 @@ def test_gt_successful_login_evidence_and_account(events):
     assert success["source_ip"] == gt["S2-T1"]["expected"]
 
 
+@pytest.mark.requires_ground_truth
 def test_gt_timeline_order_is_chronological(events):
     order = load_ground_truth()["tasks"]["S2-T5"]["expected_order"]
     by_ref = {e["event_ref"]: e for e in events}

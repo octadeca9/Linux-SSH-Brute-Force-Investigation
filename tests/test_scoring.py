@@ -26,6 +26,7 @@ def test_max_score_is_derived_and_30():
     assert store._total_tasks == 15
 
 
+@pytest.mark.requires_ground_truth
 def test_correct_submission_awards_points(client):
     r = _submit(client, "S1-T1", "/var/log/auth.log", sid="s-award")
     body = r.json()
@@ -36,6 +37,7 @@ def test_correct_submission_awards_points(client):
     assert body["progress"] == {"completed": 1, "total": 15}
 
 
+@pytest.mark.requires_ground_truth
 def test_points_awarded_once_per_task(client):
     _submit(client, "S1-T1", "/var/log/auth.log", sid="s-dup")
     r = _submit(client, "S1-T1", "/var/log/auth.log", sid="s-dup")
@@ -44,6 +46,7 @@ def test_points_awarded_once_per_task(client):
     assert body["score"] == 2  # not 4
 
 
+@pytest.mark.requires_ground_truth
 def test_wrong_answer_scores_zero(client):
     r = _submit(client, "S1-T1", "/var/log/wrong", sid="s-wrong")
     body = r.json()
@@ -51,6 +54,7 @@ def test_wrong_answer_scores_zero(client):
     assert body["score"] == 0
 
 
+@pytest.mark.requires_ground_truth
 def test_completing_all_tasks_reaches_30(client):
     sid = "s-complete"
     answers = {
@@ -70,6 +74,7 @@ def test_completing_all_tasks_reaches_30(client):
     assert last["progress"] == {"completed": 15, "total": 15}
 
 
+@pytest.mark.requires_ground_truth
 def test_attempt_limit_enforced(client):
     sid = "s-limit"
     for _ in range(10):
@@ -78,6 +83,7 @@ def test_attempt_limit_enforced(client):
     assert r.status_code == 429
 
 
+@pytest.mark.requires_ground_truth
 def test_malformed_answer_is_422(client):
     r = _submit(client, "S1-T5", "four", sid="s-malformed")
     assert r.status_code == 422
@@ -88,6 +94,7 @@ def test_unknown_task_is_404(client):
     assert r.status_code == 404
 
 
+@pytest.mark.requires_ground_truth
 def test_reset_clears_progress(client):
     sid = "s-reset"
     _submit(client, "S1-T1", "/var/log/auth.log", sid=sid)

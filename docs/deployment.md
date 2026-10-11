@@ -24,6 +24,23 @@ pip install -r requirements.txt
 uvicorn app.main:app --host 127.0.0.1 --port 8080
 ```
 
+## Platform-scored deploy (hack.redlimit.id / ngelinx)
+
+When the **platform** owns scoring, deploy this app in viewer-only mode — it
+serves just the SSH log dashboard and leaves answers to the platform:
+
+- Set `TASKS_ENABLED=false`. Submission/session endpoints return 404 and the
+  answer key is never loaded, so **no `GROUND_TRUTH_*` variable is required**.
+- `PORT` is injected by the platform; the image honors it (default 8080).
+- That is the only configuration needed. Verify with `GET /readyz` →
+  `{"ready":true,"mode":"viewer-only"}`.
+
+The answer key (`config/ground_truth.yaml`) still exists as the authoritative
+source for the platform's own validator — it is just not consumed by this app.
+CI reflects this: without a `GROUND_TRUTH_B64` secret, scoring/validation tests
+auto-skip (marker `requires_ground_truth`) and the dataset-consistency check is
+skipped, so CI stays green with no secret.
+
 ## Runtime (Docker Spawn, per participant)
 
 Production runs one isolated container per session, spawned from a pinned,
