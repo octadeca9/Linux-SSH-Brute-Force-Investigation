@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Python dependencies (requirements.txt + requirements-dev.txt).
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "python"]
+    groups:
+      # Bundle routine minor/patch bumps into a single PR to cut noise;
+      # major bumps still get their own PR for manual review.
+      python-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # Base image in the Dockerfile (e.g. python:3.12-slim).
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies", "docker"]
+
+  # Versions of the GitHub Actions used in workflows below.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies", "ci"]

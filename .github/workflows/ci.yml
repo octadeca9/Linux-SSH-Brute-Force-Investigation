@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      # The answer key is not in the repo. CI gets it from a repo secret
+      # (GROUND_TRUTH_B64) which the app/tests read at runtime. Without the
+      # secret the ground-truth tests fail by design — a safe gate.
+      - name: Validate dataset vs ground truth
+        env:
+          GROUND_TRUTH_B64: ${{ secrets.GROUND_TRUTH_B64 }}
+        run: python scripts/validate-dataset.py
+
+      - name: Run tests
+        env:
+          GROUND_TRUTH_B64: ${{ secrets.GROUND_TRUTH_B64 }}
+        run: pytest -q

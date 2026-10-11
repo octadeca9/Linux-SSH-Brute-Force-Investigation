@@ -1,0 +1,34 @@
+name: Dependabot auto-merge
+
+# Enables auto-merge for Dependabot PRs that are PATCH-level only, so they merge
+# once required status checks (CI) pass. Minor and major updates are left for
+# manual review — pre-1.0 packages here (e.g. fastapi/starlette) can break on a
+# minor bump, as the 0.115 -> 0.143 jump did.
+#
+# Requirements on the GitHub side (cannot be set from a file):
+#   1. Settings -> General -> "Allow auto-merge" must be enabled.
+#   2. Add a repo Actions secret GROUND_TRUTH_B64 so CI can run the tests.
+#   3. Recommended: branch protection on main requiring the "test" check, so
+#      auto-merge waits for green CI instead of merging immediately.
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Fetch Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+
+      - name: Enable auto-merge for patch updates
+        if: steps.meta.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
