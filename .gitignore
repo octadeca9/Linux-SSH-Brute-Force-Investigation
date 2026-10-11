@@ -5,3 +5,6 @@ __pycache__/
 .pytest_cache/
 .DS_Store
 .claude/
+
+# Answer key — never push to the public repo; supplied at runtime (mount or GROUND_TRUTH_B64)
+config/ground_truth.yaml
