@@ -103,9 +103,9 @@ def readyz() -> JSONResponse:
 def index(request: Request) -> HTMLResponse:
     challenge = load_challenge()
     return templates.TemplateResponse(
+        request,
         "index.html",
         {
-            "request": request,
             "challenge": challenge,
             "narrative": " ".join(challenge.get("narrative", "").split()),
             "tasks_enabled": config.TASKS_ENABLED,

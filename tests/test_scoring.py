@@ -104,6 +104,14 @@ def test_reset_clears_progress(client):
     assert s["progress"]["completed"] == 0
 
 
+def test_index_page_renders(client):
+    # Guards the Starlette TemplateResponse(request, name, context) signature.
+    r = client.get("/")
+    assert r.status_code == 200
+    assert "Linux SSH Brute Force Investigation" in r.text
+    assert "/static/app.js" in r.text
+
+
 def test_meta_and_events_do_not_leak_answers(client):
     for path in ("/api/meta", "/api/events"):
         text = client.get(path).text
