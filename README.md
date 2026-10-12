@@ -11,8 +11,7 @@ timeline, and submit a triage verdict.
 - Server-side validation; ground truth never reaches the browser or the
   participant image.
 
-Built from `PRD_Linux_SSH_Brute_Force_SOC_RedLimit.md` and
-`Blueprint_Linux_SSH_Brute_Force_SOC_RedLimit.md`.
+
 
 ## Quick start (local)
 
